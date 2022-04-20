@@ -1,0 +1,21 @@
+List<Account> UpdateAcclist = new List<Account>();
+    List<Id> AccIds = new List<Id>();
+    for(case c:trigger.new){
+        AccIds.add(c.accountId);
+    }
+    
+   Map<Id,Account> AccUpdateMap = new Map<id,Account>();
+    for(Account acc:[select id,	Last_Survey_Sent__c from Account where id in:AccIds]){
+        AccUpdateMap.put(acc.id,acc);
+    }
+    for(case c :trigger.new){
+      Account updateacc = AccUpdateMap.get(c.accountId);
+        updateacc.Last_Survey_Sent__c=c.Last_Survey_Sent__c;
+         UpdateAcclist.add(updateacc); 
+    }
+    try{
+        update UpdateAcclist;
+       } catch(Exception ex){
+           system.debug('could not update last survey sent on account cause'+ex.getcause());
+       }
+   
